@@ -22,3 +22,32 @@ func NewAuthService(
 		jwtService,
 	}
 }
+
+func (s *AuthService) Register(username, email, password string) (*TokenPair, error) {
+	if !utils.ValidatePassword(password) {
+		return nil, errors.New("password not secure")
+	}
+	hashedPassword, err := utils.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+
+	user := &models.User{
+		Username: username,
+		Email:    email,
+		Password: string(hashedPassword),
+	}
+
+	err = s.userRepo.Create(user)
+	if err != nil {
+		return nil, err
+	}
+
+	tokenPair, err := s.jwtService.GenerateTokenPair(user.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return tokenPair, nil
+}
+
