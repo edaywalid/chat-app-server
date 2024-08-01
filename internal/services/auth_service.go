@@ -51,3 +51,16 @@ func (s *AuthService) Register(username, email, password string) (*TokenPair, er
 	return tokenPair, nil
 }
 
+func (s *AuthService) Login(username, password string) error {
+	user, err := s.userRepo.FindByUsername(username)
+	if err != nil {
+		return err
+	}
+
+	err = utils.CheckPasswordHash(password, user.Password)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
