@@ -20,10 +20,13 @@ type App struct {
 
 type (
 	Repoisitories struct {
+		UserRepository *repositories.UserRepository
 	}
 	Services struct {
+		AuthService *services.AuthService
 	}
 	Handlers struct {
+		AuthHandler *handlers.AuthHandler
 	}
 	Middlewares struct{}
 )
@@ -50,16 +53,19 @@ func NewApp(path string) (*App, error) {
 
 func (a *App) initRepositories() {
 	a.Repositories = &Repoisitories{
+		UserRepository: repositories.NewUserRepository(a.DB),
 	}
 }
 
 func (a *App) initServices() {
 	a.Services = &Services{
+		AuthService: services.NewAuthService(a.Repositories.UserRepository, services.NewJwtService(a.Config)),
 	}
 }
 
 func (a *App) initHandlers() {
 	a.Handlers = &Handlers{
+		AuthHandler: handlers.NewAuthHandler(a.Services.AuthService),
 	}
 }
 
