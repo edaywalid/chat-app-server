@@ -14,4 +14,5 @@ func NewAuthRoutes(app *app.App) *AuthRoutes {
 }
 
 func (r *AuthRoutes) Setup(router *gin.Engine) {
+	router.POST("/register", r.app.Handlers.AuthHandler.Register)
 }
