@@ -6,6 +6,7 @@ import (
 	"github.com/edaywalid/chat-app/internal/handlers"
 	"github.com/edaywalid/chat-app/internal/repositories"
 	"github.com/edaywalid/chat-app/internal/services"
+	"github.com/edaywalid/chat-app/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -59,7 +60,11 @@ func (a *App) initRepositories() {
 
 func (a *App) initServices() {
 	a.Services = &Services{
-		AuthService: services.NewAuthService(a.Repositories.UserRepository, services.NewJwtService(a.Config)),
+		AuthService: services.NewAuthService(
+			a.Repositories.UserRepository,
+			services.NewJwtService(a.Config),
+			utils.NewEmailService(a.Config),
+		),
 	}
 }
 
