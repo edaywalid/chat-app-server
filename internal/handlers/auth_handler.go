@@ -27,16 +27,14 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		return
 	}
 
-	tokenPair, err := h.authService.Register(input.Username, input.Email, input.Password)
+	err := h.authService.Register(input.Username, input.Email, input.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"message":       "User registered successfully",
-		"access-token":  tokenPair.AccessToken,
-		"refresh-token": tokenPair.RefreshToken,
+		"message": "User registered successfully. Please check your email for verification code.",
 	})
 }
 
@@ -58,3 +56,4 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "User Logged In"})
 }
+
