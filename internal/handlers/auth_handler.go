@@ -48,13 +48,17 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	if err := h.authService.Login(input.Username, input.Password); err != nil {
+	tokenPair, err := h.authService.Login(input.Username, input.Password)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User Logged In"})
+	c.JSON(http.StatusOK, gin.H{
+		"message":       "User Logged In",
+		"access_token":  tokenPair.AccessToken,
+		"refresh_token": tokenPair.RefreshToken,
+	})
 }
 
 func (h *AuthHandler) ConfirmEmail(c *gin.Context) {

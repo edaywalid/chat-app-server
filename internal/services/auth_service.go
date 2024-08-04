@@ -57,15 +57,15 @@ func (s *AuthService) Register(username, email, password string) error {
 	return nil
 }
 
-func (s *AuthService) Login(username, password string) error {
+func (s *AuthService) Login(username, password string) (*TokenPair, error) {
 	user, err := s.userRepo.FindByUsername(username)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	err = utils.CheckPasswordHash(password, user.Password)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if !user.IsVerified {
@@ -75,24 +75,32 @@ func (s *AuthService) Login(username, password string) error {
 
 		err = s.userRepo.Update(user)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		err = s.emailService.SendEmail("Welcome to chat app", "your confirmation code is : "+user.EmailConfirmationCode, user.Email)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
-		return errors.New("email not verified")
+		return nil, errors.New("email not verified")
 	}
 
-	return nil
+	tokenPair, err := s.jwtService.GenerateTokenPair(user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return tokenPair, nil
 }
 
 func (s *AuthService) ConfirmEmail(email, code string) error {
 	user, err := s.userRepo.FindByEmail(email)
 	if err != nil {
 		return err
+	}
+
+	if user.IsVerified {
+		return errors.New("email already verified")
 	}
 
 	if user.EmailConfirmationCode == code {
