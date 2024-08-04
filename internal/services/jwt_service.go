@@ -1,7 +1,6 @@
 package services
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/edaywalid/chat-app/configs"
@@ -28,15 +27,11 @@ func (s *JwtService) GenerateTokenPair(userID uuid.UUID) (*TokenPair, error) {
 		"exp":     time.Now().Add(time.Minute * 15).Unix(),
 	})
 
-	fmt.Println("accesstoken  : ", accessToken)
-
-	fmt.Println("signed string : ", s.config.JWTSecret)
 	accessTokenString, err := accessToken.SignedString([]byte(s.config.JWTSecret))
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println("accessTokenString : ", accessTokenString)
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,
 		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
