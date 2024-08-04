@@ -48,18 +48,21 @@ func (s *JwtService) GenerateTokenPair(userID uuid.UUID) (*TokenPair, error) {
 	}, nil
 }
 
-func (s *JwtService) ValidateToken(tokenString string) (uint, error) {
+func (s *JwtService) ValidateToken(tokenString string) (uuid.UUID, error) {
 	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
 		return []byte(s.config.JWTSecret), nil
 	})
 	if err != nil {
-		return 0, err
+		return uuid.UUID{}, err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		userID := uint(claims["user_id"].(float64))
+		userID, err := uuid.Parse(claims["user_id"].(string))
+		if err != nil {
+			return uuid.UUID{}, err
+		}
 		return userID, nil
 	}
 
-	return 0, jwt.ErrSignatureInvalid
+	return uuid.UUID{}, jwt.ErrSignatureInvalid
 }
