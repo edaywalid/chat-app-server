@@ -104,7 +104,7 @@ func (s *AuthService) ConfirmEmail(email, code string) error {
 	}
 
 	if user.EmailConfirmationCode == code {
-		if user.EmailConfirmationCodeExpiry.Before(time.Now()) {
+		if user.EmailConfirmationCodeExpiry.After(time.Now()) {
 			user.IsVerified = true
 			user.EmailConfirmationCode = ""
 			user.EmailConfirmationCodeExpiry = time.Time{}
