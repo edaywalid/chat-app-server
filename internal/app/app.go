@@ -19,6 +19,7 @@ type App struct {
 	Services     *Services
 	Handlers     *Handlers
 	Middlewares  *Middlewares
+	Managers     *Managers
 }
 
 type (
@@ -37,6 +38,8 @@ type (
 	Middlewares struct {
 		AuthMiddleware *middlewares.AuthMiddleware
 		CorsMiddleware *middlewares.CorsMiddleware
+	}
+	Managers struct {
 	}
 )
 
@@ -85,6 +88,7 @@ func (a *App) initServices() {
 			services.NewJwtService(a.Config),
 			utils.NewEmailService(a.Config),
 		),
+func (a *App) initManagers() {
 	}
 }
 
@@ -104,6 +108,7 @@ func (a *App) initMiddlewares() {
 func (a *App) Init() {
 	a.initDatabases()
 	a.initRepositories()
+	a.initManagers()
 	a.initServices()
 	a.initHandlers()
 	a.initMiddlewares()
