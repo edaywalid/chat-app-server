@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDB(config *configs.Config) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(config.DBUrl), &gorm.Config{})
+func InitPSQL(config *configs.Config) (*gorm.DB, error) {
+	db, err := gorm.Open(postgres.Open(config.PostgresUrl), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
