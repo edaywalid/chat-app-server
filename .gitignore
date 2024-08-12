@@ -1,3 +1,5 @@
 bin/
 tests/
 *.env
+mongodb_db/
+static/
