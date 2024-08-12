@@ -54,11 +54,9 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message":       "User Logged In",
-		"access_token":  tokenPair.AccessToken,
-		"refresh_token": tokenPair.RefreshToken,
-	})
+	c.SetCookie("access_token", tokenPair.AccessToken, 60*15, "/", "localhost", false, true)
+	c.SetCookie("refresh_token", tokenPair.RefreshToken, 60*60*24*7, "/", "localhost", false, true)
+	c.String(http.StatusOK, "Logged in successfully")
 }
 
 func (h *AuthHandler) ConfirmEmail(c *gin.Context) {
