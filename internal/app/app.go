@@ -7,6 +7,7 @@ import (
 	"github.com/edaywalid/chat-app/internal/middlewares"
 	"github.com/edaywalid/chat-app/internal/repositories"
 	"github.com/edaywalid/chat-app/internal/services"
+	"github.com/edaywalid/chat-app/internal/websocket"
 	"github.com/edaywalid/chat-app/pkg/utils"
 	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
@@ -40,6 +41,7 @@ type (
 		CorsMiddleware *middlewares.CorsMiddleware
 	}
 	Managers struct {
+		WsManager *websocket.Manager
 	}
 )
 
@@ -89,6 +91,8 @@ func (a *App) initServices() {
 			utils.NewEmailService(a.Config),
 		),
 func (a *App) initManagers() {
+	a.Managers = &Managers{
+		WsManager: websocket.NewManger(),
 	}
 }
 
