@@ -3,12 +3,14 @@ package configs
 import "github.com/spf13/viper"
 
 type Config struct {
-	DBUrl     string `mapstructure:"DB_URL"`
-	JWTSecret string `mapstructure:"JWT_SECRET"`
-	SMTPHost  string `mapstructure:"SMTP_HOST"`
-	SMTPPort  int    `mapstructure:"SMTP_PORT"`
-	SMTPUser  string `mapstructure:"SMTP_USER"`
-	SMTPPass  string `mapstructure:"SMTP_PASS"`
+	PostgresUrl string `mapstructure:"POSTGRES_URL"`
+	MongoURI    string `mapstructure:"MONGO_URI"`
+	RedisUrl    string `mapstructure:"REDIS_URL"`
+	JWTSecret   string `mapstructure:"JWT_SECRET"`
+	SMTPHost    string `mapstructure:"SMTP_HOST"`
+	SMTPPort    int    `mapstructure:"SMTP_PORT"`
+	SMTPUser    string `mapstructure:"SMTP_USER"`
+	SMTPPass    string `mapstructure:"SMTP_PASS"`
 }
 
 func LoadConfig(path string) (config *Config, err error) {
