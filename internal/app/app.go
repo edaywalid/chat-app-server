@@ -11,7 +11,7 @@ import (
 )
 
 type App struct {
-	DB           *gorm.DB
+	Databases    *Databases
 	Config       *configs.Config
 	Repositories *Repoisitories
 	Services     *Services
@@ -20,6 +20,9 @@ type App struct {
 }
 
 type (
+	Databases struct {
+		postgres *gorm.DB
+	}
 	Repoisitories struct {
 		UserRepository *repositories.UserRepository
 	}
@@ -38,12 +41,7 @@ func NewApp(path string) (*App, error) {
 		return nil, err
 	}
 
-	db, err := db.InitDB(config)
-	if err != nil {
-		return nil, err
-	}
 	app := &App{
-		DB:     db,
 		Config: config,
 	}
 
@@ -52,9 +50,20 @@ func NewApp(path string) (*App, error) {
 	return app, nil
 }
 
+func (a *App) initDatabases() {
+	postgres, err := db.InitPSQL(a.Config)
+	if err != nil {
+		panic(err)
+	}
+
+
+	a.Databases = &Databases{
+		postgres: postgres,
+	}
+}
 func (a *App) initRepositories() {
 	a.Repositories = &Repoisitories{
-		UserRepository: repositories.NewUserRepository(a.DB),
+		UserRepository: repositories.NewUserRepository(a.Databases.postgres),
 	}
 }
 
@@ -79,6 +88,7 @@ func (a *App) initMiddlewares() {
 }
 
 func (a *App) Init() {
+	a.initDatabases()
 	a.initRepositories()
 	a.initServices()
 	a.initHandlers()
