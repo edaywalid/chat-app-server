@@ -36,6 +36,8 @@ type (
 	}
 	Handlers struct {
 		AuthHandler *handlers.AuthHandler
+		WebSocketHandler *handlers.WebSocketHandler
+	}
 	Middlewares struct {
 		AuthMiddleware *middlewares.AuthMiddleware
 		CorsMiddleware *middlewares.CorsMiddleware
