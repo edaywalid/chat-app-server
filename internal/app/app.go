@@ -32,10 +32,14 @@ type (
 		UserRepository *repositories.UserRepository
 	}
 	Services struct {
-		AuthService *services.AuthService
+		AuthService  *services.AuthService
+		JwtService   *services.JwtService
+		EmailService *utils.EmailService
+		ChatService  *services.ChatService
+		RedisService *services.RedisService
 	}
 	Handlers struct {
-		AuthHandler *handlers.AuthHandler
+		AuthHandler      *handlers.AuthHandler
 		WebSocketHandler *handlers.WebSocketHandler
 	}
 	Middlewares struct {
@@ -87,11 +91,21 @@ func (a *App) initRepositories() {
 
 func (a *App) initServices() {
 	a.Services = &Services{
-		AuthService: services.NewAuthService(
-			a.Repositories.UserRepository,
-			services.NewJwtService(a.Config),
-			utils.NewEmailService(a.Config),
-		),
+		JwtService:   services.NewJwtService(a.Config),
+		EmailService: utils.NewEmailService(a.Config),
+		RedisService: services.NewRedisService(a.Config),
+	}
+	a.Services.AuthService = services.NewAuthService(
+		a.Repositories.UserRepository,
+		a.Services.JwtService,
+		a.Services.EmailService,
+	)
+	a.Services.ChatService = services.NewChatService(
+		a.Managers.WsManager,
+		a.Services.RedisService,
+	)
+}
+
 func (a *App) initManagers() {
 	a.Managers = &Managers{
 		WsManager: websocket.NewManger(),
