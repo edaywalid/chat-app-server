@@ -10,7 +10,9 @@ import (
 
 func SetupRoutes(app *app.App) *gin.Engine {
 	router := gin.Default()
+	router.Use(app.Middlewares.CorsMiddleware.CORSMiddleware())
 	fmt.Println("is router nil?", router == nil)
 	routes.NewAuthRoutes(app).Setup(router)
+	routes.NewChatRoutes(app).Setup(router)
 	return router
 }
