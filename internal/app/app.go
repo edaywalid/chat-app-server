@@ -35,9 +35,9 @@ type (
 	Handlers struct {
 		AuthHandler *handlers.AuthHandler
 	Middlewares struct {
+		AuthMiddleware *middlewares.AuthMiddleware
 		CorsMiddleware *middlewares.CorsMiddleware
 	}
-	Middlewares struct{}
 )
 
 func NewApp(path string) (*App, error) {
@@ -96,6 +96,7 @@ func (a *App) initHandlers() {
 
 func (a *App) initMiddlewares() {
 	a.Middlewares = &Middlewares{
+		AuthMiddleware: middlewares.NewAuthMiddleware(a.Services.JwtService),
 		CorsMiddleware: middlewares.NewCorsMiddleware(),
 	}
 }
