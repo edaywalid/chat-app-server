@@ -7,6 +7,7 @@ import (
 	"github.com/edaywalid/chat-app/internal/repositories"
 	"github.com/edaywalid/chat-app/internal/services"
 	"github.com/edaywalid/chat-app/pkg/utils"
+	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
@@ -22,6 +23,7 @@ type App struct {
 type (
 	Databases struct {
 		postgres *gorm.DB
+		mongo    *mongo.Client
 	}
 	Repoisitories struct {
 		UserRepository *repositories.UserRepository
@@ -56,11 +58,17 @@ func (a *App) initDatabases() {
 		panic(err)
 	}
 
+	mongo, err := db.InitMongo(a.Config)
+	if err != nil {
+		panic(err)
+	}
 
 	a.Databases = &Databases{
 		postgres: postgres,
+		mongo:    mongo,
 	}
 }
+
 func (a *App) initRepositories() {
 	a.Repositories = &Repoisitories{
 		UserRepository: repositories.NewUserRepository(a.Databases.postgres),
