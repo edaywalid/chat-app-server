@@ -4,6 +4,7 @@ import (
 	"github.com/edaywalid/chat-app/configs"
 	"github.com/edaywalid/chat-app/internal/db"
 	"github.com/edaywalid/chat-app/internal/handlers"
+	"github.com/edaywalid/chat-app/internal/middlewares"
 	"github.com/edaywalid/chat-app/internal/repositories"
 	"github.com/edaywalid/chat-app/internal/services"
 	"github.com/edaywalid/chat-app/pkg/utils"
@@ -33,6 +34,8 @@ type (
 	}
 	Handlers struct {
 		AuthHandler *handlers.AuthHandler
+	Middlewares struct {
+		CorsMiddleware *middlewares.CorsMiddleware
 	}
 	Middlewares struct{}
 )
@@ -92,7 +95,9 @@ func (a *App) initHandlers() {
 }
 
 func (a *App) initMiddlewares() {
-	a.Middlewares = &Middlewares{}
+	a.Middlewares = &Middlewares{
+		CorsMiddleware: middlewares.NewCorsMiddleware(),
+	}
 }
 
 func (a *App) Init() {
