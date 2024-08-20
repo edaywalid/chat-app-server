@@ -56,6 +56,7 @@ func (h *WebSocketHandler) SendOneOnOneMessage(c *gin.Context) {
 		}
 		messageModel.SenderID = userID.String()
 		println("Message received: ", messageModel.Content)
+		messageModel.CreatedAt = time.Now()
 
 		if messageModel.RecipientID != uuid.Nil.String() {
 			err = h.chatService.SendDirectMessage(messageModel)
