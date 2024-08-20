@@ -43,7 +43,7 @@ func (h *WebSocketHandler) SendOneOnOneMessage(c *gin.Context) {
 	userID := extracted_userid.(uuid.UUID)
 	h.wsManager.AddClient(userID, conn)
 	defer h.wsManager.RemoveClient(userID)
-
+	go h.chatService.ListenForDirectMessage(userID)
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
