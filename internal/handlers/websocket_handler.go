@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/edaywalid/chat-app/internal/models"
 	"github.com/edaywalid/chat-app/internal/services"
@@ -37,6 +39,7 @@ func (h *WebSocketHandler) SendOneOnOneMessage(c *gin.Context) {
 	}
 
 	extracted_userid, exists := c.Get("user_id")
+
 	if !exists {
 		return
 	}
@@ -47,18 +50,20 @@ func (h *WebSocketHandler) SendOneOnOneMessage(c *gin.Context) {
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
-			break
+			panic(err)
+			return
 		}
 		messageModel := &models.Message{}
 		err = json.Unmarshal(message, &messageModel)
 		if err != nil {
-			break
+			panic(err)
+			return
 		}
+
 		messageModel.SenderID = userID.String()
-		println("Message received: ", messageModel.Content)
 		messageModel.CreatedAt = time.Now()
 
-		if messageModel.RecipientID != uuid.Nil.String() {
+		if messageModel.RecipientID != "" {
 			err = h.chatService.SendDirectMessage(messageModel)
 		}
 	}
@@ -67,11 +72,13 @@ func (h *WebSocketHandler) SendOneOnOneMessage(c *gin.Context) {
 func (h *WebSocketHandler) SendGroupMessage(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
+		panic(err)
 		return
 	}
 
 	extracted_userid, exists := c.Get("user_id")
 	if !exists {
+		panic(err)
 		return
 	}
 	userID := extracted_userid.(uuid.UUID)
@@ -81,17 +88,18 @@ func (h *WebSocketHandler) SendGroupMessage(c *gin.Context) {
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
+			panic(err)
 			break
 		}
 		messageModel := &models.GroupMessage{}
 		err = json.Unmarshal(message, &messageModel)
 		if err != nil {
+			panic(err)
 			break
 		}
 		messageModel.SenderID = userID.String()
-		println("Message received: ", messageModel.Content)
 
-		if messageModel.GroupID == uuid.Nil.String() {
+		if messageModel.GroupID == "" {
 			err = h.chatService.SendGroupMessage(messageModel)
 		}
 	}
@@ -100,11 +108,13 @@ func (h *WebSocketHandler) SendGroupMessage(c *gin.Context) {
 func (h *WebSocketHandler) SendBroadcastMessage(c *gin.Context) {
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
+		panic(err)
 		return
 	}
 
 	extracted_userid, exists := c.Get("user_id")
 	if !exists {
+		panic(err)
 		return
 	}
 	userID := extracted_userid.(uuid.UUID)
@@ -114,16 +124,16 @@ func (h *WebSocketHandler) SendBroadcastMessage(c *gin.Context) {
 	for {
 		_, message, err := conn.ReadMessage()
 		if err != nil {
+			panic(err)
 			break
 		}
 		messageModel := &models.Message{}
 		err = json.Unmarshal(message, &messageModel)
 		if err != nil {
+			panic(err)
 			break
 		}
 		messageModel.SenderID = userID.String()
-		println("Message received: ", messageModel.Content)
-
 		err = h.chatService.BroadcastMessage(messageModel)
 	}
 }
