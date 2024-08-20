@@ -39,7 +39,7 @@ func (s *ChatService) SendGroupMessage(message *models.GroupMessage) error {
 		return err
 	}
 	groupID := message.GroupID
-	channel := fmt.Sprintf("group:%d", groupID)
+	channel := fmt.Sprintf("group:%s", groupID)
 	return s.redisService.Publish(channel, jsonMessage)
 }
 
@@ -53,7 +53,7 @@ func (s *ChatService) BroadcastMessage(message *models.Message) error {
 }
 
 func (s *ChatService) ListenForDirectMessage(userID uuid.UUID) {
-	channel := fmt.Sprintf("direct:%d", userID)
+	channel := fmt.Sprintf("direct:%s", userID)
 	pubsub := s.redisService.Subscribe(channel)
 	defer pubsub.Close()
 
@@ -69,7 +69,6 @@ func (s *ChatService) ListenForDirectMessage(userID uuid.UUID) {
 			log.Printf("Error unmarshalling message: %v", err)
 			continue
 		}
-
 		client := s.wsManager.GetClient(userID)
 		if client == nil {
 			log.Printf("Client not found for user %s", userID)
