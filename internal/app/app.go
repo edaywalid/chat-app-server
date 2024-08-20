@@ -114,7 +114,8 @@ func (a *App) initManagers() {
 
 func (a *App) initHandlers() {
 	a.Handlers = &Handlers{
-		AuthHandler: handlers.NewAuthHandler(a.Services.AuthService),
+		AuthHandler:      handlers.NewAuthHandler(a.Services.AuthService),
+		WebSocketHandler: handlers.NewWebSocketHandler(a.Managers.WsManager, a.Services.ChatService),
 	}
 }
 
