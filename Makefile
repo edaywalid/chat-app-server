@@ -20,6 +20,8 @@ db-script:
 	echo "Script: $$script"; \
 	docker-compose exec -T psql_database psql --username=root -d chat-app -c "$$script"
 
+mongosh:
+	docker exec -it mongo_database bash -c "mongosh --username root --password password  --authenticationDatabase admin"
 
 tidy:
 	go mod tidy
