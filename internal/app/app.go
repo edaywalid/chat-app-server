@@ -30,6 +30,7 @@ type (
 	}
 	Repoisitories struct {
 		UserRepository *repositories.UserRepository
+		ChatRepository *repositories.ChatRepository
 	}
 	Services struct {
 		AuthService  *services.AuthService
@@ -86,6 +87,7 @@ func (a *App) initDatabases() {
 func (a *App) initRepositories() {
 	a.Repositories = &Repoisitories{
 		UserRepository: repositories.NewUserRepository(a.Databases.postgres),
+		ChatRepository: repositories.NewChatRepository(a.Databases.mongo),
 	}
 }
 
@@ -103,6 +105,7 @@ func (a *App) initServices() {
 	a.Services.ChatService = services.NewChatService(
 		a.Managers.WsManager,
 		a.Services.RedisService,
+		a.Repositories.ChatRepository,
 	)
 }
 
