@@ -7,19 +7,23 @@ import (
 	"log"
 
 	"github.com/edaywalid/chat-app/internal/models"
+	"github.com/edaywalid/chat-app/internal/repositories"
 	"github.com/edaywalid/chat-app/internal/websocket"
 	"github.com/google/uuid"
 )
 
 type ChatService struct {
-	wsManager    *websocket.Manager
-	redisService *RedisService
+	chatRepositroy *repositories.ChatRepository
+	wsManager      *websocket.Manager
+	redisService   *RedisService
 }
 
-func NewChatService(wsManager *websocket.Manager, redisService *RedisService) *ChatService {
+func NewChatService(
+	wsManager *websocket.Manager, redisService *RedisService, chatRepositroy *repositories.ChatRepository) *ChatService {
 	return &ChatService{
-		wsManager:    wsManager,
-		redisService: redisService,
+		wsManager:      wsManager,
+		redisService:   redisService,
+		chatRepositroy: chatRepositroy,
 	}
 }
 
@@ -30,6 +34,10 @@ func (s *ChatService) SendDirectMessage(message *models.Message) error {
 	}
 	recipientID := message.RecipientID
 	channel := fmt.Sprintf("direct:%s", recipientID)
+	err = s.chatRepositroy.SaveMessage(*message)
+	if err != nil {
+		return err
+	}
 	return s.redisService.Publish(channel, jsonMessage)
 }
 
@@ -40,6 +48,10 @@ func (s *ChatService) SendGroupMessage(message *models.GroupMessage) error {
 	}
 	groupID := message.GroupID
 	channel := fmt.Sprintf("group:%s", groupID)
+	err = s.chatRepositroy.SaveGroupMessage(*message)
+	if err != nil {
+		return err
+	}
 	return s.redisService.Publish(channel, jsonMessage)
 }
 
